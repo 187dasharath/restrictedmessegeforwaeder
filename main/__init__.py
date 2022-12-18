@@ -12,12 +12,12 @@ logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s'
                     level=logging.WARNING)
 
 # variables
-API_ID = config("API_ID", default=None, cast=int)
-API_HASH = config("API_HASH", default=None)
-BOT_TOKEN = config("BOT_TOKEN", default=None)
-SESSION = config("SESSION", default=None)
-FORCESUB = config("FORCESUB", default=None)
-AUTH = config("AUTH", default=None, cast=int)
+API_ID = 24525445
+API_HASH = "ec30d2a64a99aa17518c6506860dcf43"
+BOT_TOKEN = "5606250570:AAH2CbJOYoofUz1kVkyxL6imu6geKGt4nQQ"
+SESSION = "AQCVhjcI9cul3BuNt22l9itMxEf9NlDEJK1lCMRUWuvRFUKSdu_C-VtwzmsHWlfo4QK38VNzneoz1KHFUEjOra0WFldMCimRKgsKM6uMOs6O14i05zHbR0v5AUjC5RcUVyXy6gO0eako1qIgfyhRitTHAUhKVs4URhe2wEM9BQq0CjTTFUSBCGAbXYQQssfkiT62NoOzkUzu6m1HSJgEgelQDor_efOkI1ZbPV_TCTxWLKDBdayNCHLOCXPKZOf9DZXqbE-FDOSnVuUPY3ihKaopB8Aick7-oIDwql4toCGVX6gTNE2DF93ogUuzRYiMWzVeQj6Zb1bp-SF5H1C1mUCFAAAAAU4QSUQA"
+FORCESUB = "my_forwarder_bot01"
+AUTH = 5604657476
 
 bot = TelegramClient('bot', API_ID, API_HASH).start(bot_token=BOT_TOKEN) 
 
