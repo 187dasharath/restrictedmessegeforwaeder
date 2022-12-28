@@ -74,11 +74,12 @@ async def _batch(event):
                 await conv.send_message(r)
                 return
             batch.append(f'{event.sender_id}')
-            cd = await conv.send_message("**Batch process ongoing.**\n\nProcess completed: 0", 
+            cd = await conv.send_message("**Batch process ongoing.**\n\nProcess completed: ", 
                                     buttons=[[Button.inline("CANCEL❌", data="cancel")]])
             await run_batch(userbot, Bot, event.sender_id, cd, _link) 
             conv.cancel()
-            batch.pop(0)
+            ids.clear()
+            batch.clear()
 
 @Drone.on(events.callbackquery.CallbackQuery(data="cancel"))
 async def cancel(event):
@@ -99,15 +100,11 @@ async def run_batch(userbot, client, sender, countdown, link):
             else:
                 timer = 3
         try: 
+            count_down = f"**Batch process ongoing.**\n\nProcess completed: {i+1}"
             integer = int(ids[i])
-            er, out = await get_bulk_msg(userbot, client, sender, link, integer) 
-            if er is not True:
-                fw_alert = await client.send_message(sender, f'Sleeping for {int(out)} second(s) due to telegram flooodwait.')
-                await asyncio.sleep(out)
-                await fw_alert.delete()
-                await get_bulk_msg(userbot, client, sender, link, integer)
+            await get_bulk_msg(userbot, client, sender, link, integer) 
             protection = await client.send_message(sender, f"Sleeping for `{timer}` seconds to avoid Floodwaits and Protect account!")
-            await countdown.edit(f"**Batch process ongoing.**\n\nProcess completed: {i+1}", 
+            await countdown.edit(count_down, 
                                  buttons=[[Button.inline("CANCEL❌", data="cancel")]])
             await asyncio.sleep(timer)
             await protection.delete()
@@ -115,9 +112,24 @@ async def run_batch(userbot, client, sender, countdown, link):
             await client.send_message(sender, "Batch successfully completed!")
             await countdown.delete()
             break
+        except Floodwait as fw:
+            if int(fw.x) > 300:
+                await client.send_message(sender, f'You have floodwaits of {fw.x} seconds, cancelling batch') 
+                ids.clear()
+                break
+            else:
+                fw_alert = await client.send_message(sender, f'Sleeping for {fw.x + 5} second(s) due to telegram flooodwait.')
+                await asyncio.sleep(out)
+                await fw_alert.delete()
+                try:
+                    await get_bulk_msg(userbot, client, sender, link, integer)
+                except Exception as e:
+                    print(e)
+                    if not countdown.text == count_down:
+                        await countdown.edit(count_down, buttons=[[Button.inline("CANCEL❌", data="cancel")]])
         except Exception as e:
             print(e)
-            await countdown.edit(f"**Batch process ongoing.**\n\nProcess completed: {i+1}", 
-                                 buttons=[[Button.inline("CANCEL❌", data="cancel")]])
-            
-
+            await client.send_message(sender, f"An error occurred during cloning, batch will continue.\n\n**Error:** {str(e)}")
+            if not countdown.text == count_down:
+                await countdown.edit(count_down, buttons=[[Button.inline("CANCEL❌", data="cancel")]])
+        
